@@ -1,4 +1,4 @@
-=== [Base Plugin Name] Extension: [Extension Name] ===
+=== The Events Calendar Extension: Template Outliner ===
 Contributors: ModernTribe
 Donate link: http://m.tri.be/29
 Tags: events, calendar
@@ -13,9 +13,7 @@ License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 == Description ==
 
-This is the long description.  No limit, and you can use Markdown (as well as in the following sections).
-
-For backwards compatibility, if this section is missing, the full length of the short description will be used, and Markdown parsed.
+Extension to assist customizers and developers in determining which template they are dealing with when looking at a portion of their website. A live, on-site visual guide to view templates.
 
 == Installation ==
 
@@ -37,6 +35,6 @@ We're always interested in your feedback and our [Help Desk](https://support.the
 
 == Changelog ==
 
-= [1.0.0] YYYY-MM-DD =
+= [0.1.0] YYYY-MM-DD =
 
 * Initial release
