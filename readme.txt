@@ -35,6 +35,6 @@ We're always interested in your feedback and our [Help Desk](https://support.the
 
 == Changelog ==
 
-= [0.1.0] YYYY-MM-DD =
+= [1.0.0] YYYY-MM-DD =
 
 * Initial release
