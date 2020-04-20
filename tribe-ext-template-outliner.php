@@ -56,7 +56,7 @@ if (
 		 */
 		public function construct() {
 			// Dependency requirements and class properties can be defined here.
-			$this->add_required_plugin( 'Tribe__Tickets__Main', '4.4' );
+			$this->add_required_plugin( 'Tribe__Events__Main', '4.4' );
 		}
 
 		/**
@@ -96,6 +96,20 @@ if (
 			load_plugin_textdomain( 'tribe-ext-template-outliner', false, basename( dirname( __FILE__ ) ) . '/languages/' );
 
 			if ( ! $this->php_version_check() ) {
+				return;
+			}
+
+			// don't run in the admin or anything silly like that!
+			if ( 
+				is_admin()
+				|| defined( 'DOING_AJAX' ) && DOING_AJAX
+			) {
+				return;
+			}
+
+			// Don't show tot he general public - in case someone actually uses it on a live site!
+			$user = wp_get_current_user();
+			if ( ! in_array( 'administrator', (array) $user->roles ) ) {
 				return;
 			}
 
@@ -207,85 +221,150 @@ if (
 
 		function tribe_ext_template_outliner_styles() {
 			?><style> 
-				.tribe-ext-template-debug { 
+				#tribe-ext-template-debug-panel { 
 					background-color: white; 
+					border-radius: 3px;
 					border: 1px solid black;
 					color: black; 
 					display: none; 
-					font-size: 20px; 
+					font-size: 1rem; 
 					opacity: 90%;
 					padding: .5em 2em;
 					position: fixed; 
-					z-index: 99999; 
 					width: 50%;
+					z-index: 99999; 
 				}
 
-				.tribe-ext-template-debug input {
-					display: block;
+				#tribe-ext-template-debug-panel ul {
+					list-style: none;
+				}
+
+				#tribe-ext-template-debug-panel li { 
+					display: flex; 
+					margin-bottom: .25em; 
+					white-space:nowrap;
+				}
+
+				#tribe-ext-template-debug-panel input { 
 					width: 100%;
 				}
 
-				.tribe-ext-template-debug-bottom {
-					bottom: 0;
+				.tribe-ext-template-debug {
+					display: none;
 				}
 
+				.tribe-ext-template-debug-bottom {
+					border-top-left-radius: 0;
+					border-top-right-radius: 0;
+					bottom: 0;
+				}
 				.tribe-ext-template-debug-left {
+					border-bottom-right-radius: 0;
+					border-top-right-radius: 0;
 					left: 0;
 				}
 				.tribe-ext-template-debug-right {
+					border-bottom-left-radius: 0;
+					border-top-left-radius: 0;
 					right: 0;
 				}
 				.tribe-ext-template-debug-top {
+					border-bottom-left-radius: 0;
+					border-bottom-right-radius: 0;
 					top: 0;
 				}
 
-				.tribe-ext-template-border { border: 1px solid red !important; } 
+				.tribe-ext-template-debug-border { 
+					box-shadow: inset 0px 0px 0px 1px red; 
+				} 
 			</style><?php
 		}
 
 		function tribe_ext_template_outliner_scripts() {
-			?><script>
-				(function($){
+			?>
+			<div id="tribe-ext-template-debug-panel">
+				<h1>Hold control to "lock" the panel. double-click inputs to copy to clipboard.</h1>
+				<ul>
+					<li>plugin file: <input id='tribe_ext_tod_plugin_file' value='{$path}' readonly /></li>
+					<li>theme path: <input id='tribe_ext_tod_theme_path' value='[your theme]/tribe/{$hook_name}.php' readonly /></li>
+				</ul>
+				<ol>
+					<li>pre_html filter: <input id='tribe_ext_tod_pre_html' value='tribe_template_pre_html:{$hook_name}' readonly /></li>
+					<li>before_include action: <input id='tribe_ext_tod_before_include' value='tribe_template_before_include:{$hook_name}' readonly /></li>
+					<li>after_include action: <input id='tribe_ext_tod_after_include' value='tribe_template_after_include:{$hook_name}' readonly /></li>
+					<li>template_html filter: <input id='tribe_ext_tod_template_html' value='tribe_template_html:{$hook_name}' readonly /></li>
+				</ol>
+			</div>
+			<script>
+				( function( $ ) {
+					var $panel = $( '#tribe-ext-template-debug-panel' );
+
+					$panel.find( 'input' ).dblclick( function () {
+						$( this ).select();
+  						document.execCommand( 'copy' );
+					} );
+
 					$('.tribe-ext-template-debug').each(
 					function( index ) {
-						var $this = $( this );
-						var $next = $this.next();
+						var $this  = $( this );
+						var $next  = $this.next();
 						
-						$next.on( 'mouseenter', function( event ) {
-							$( 'body' ).append($this);
-							$( '.tribe-ext-template-debug ' ).hide();
-							var xCord = event.pageX;
-							var yCord = event.pageY;
-							wPercent  = xCord / $( window ).width() * 100;
-							hPercent  = yCord / $( window ).height() * 100;
+						$next.on( {
+							mouseenter: function( event ) {
+								event.stopPropagation();
+								event.stopImmediatePropagation();
+								$( 'body' ).append($this);
+								$panel.hide();
+								var xCord = event.screenX;
+								var yCord = event.screenY;
 
-							$this.removeClass( 'tribe-ext-template-debug-left tribe-ext-template-debug-right tribe-ext-template-debug-top tribe-ext-template-debug-bottom' );
+								if ( ! event.ctrlKey ) {
+									// Class cleanup.
+									$panel.removeClass( 'tribe-ext-template-debug-left tribe-ext-template-debug-right tribe-ext-template-debug-top tribe-ext-template-debug-bottom' );
 
-							if ( 50 > wPercent ) {
-								$this.addClass( 'tribe-ext-template-debug-right' );
-							} else {
-								$this.addClass( 'tribe-ext-template-debug-left' );
+									// Reposition panel to allow mouse access to entire page.
+									if ( 50 > ( xCord / $( window ).width() * 100 ) ) {
+										$panel.addClass( 'tribe-ext-template-debug-right' );
+									} else {
+										$panel.addClass( 'tribe-ext-template-debug-left' );
+									}
+
+									if ( 50 > ( yCord / $( window ).height() * 100 ) ) {
+										$panel.addClass( 'tribe-ext-template-debug-bottom' );
+									} else {
+										$panel.addClass( 'tribe-ext-template-debug-top' );
+									}
+								
+									// Update data in panel.
+									$( '#tribe_ext_tod_plugin_file' ).val( $this.data( 'plugin-file' ) );
+									$( '#tribe_ext_tod_theme_path' ).val( $this.data( 'theme-path' ) );
+									$( '#tribe_ext_tod_pre_html' ).val( $this.data( 'pre-html-filter' ) );
+									$( '#tribe_ext_tod_before_include' ).val( $this.data( 'before-include-action' ) );
+									$( '#tribe_ext_tod_after_include' ).val( $this.data( 'after-include-action' ) );
+									$( '#tribe_ext_tod_template_html' ).val( $this.data( 'template-html-filter' ) );
+									
+									// Add indicator class to hover target.
+									$next.addClass( 'tribe-ext-template-debug-border' );
+								}
+
+								// Show the panel if it's hidden.
+								$panel.show();
+							},
+							mouseleave: function( event ) {
+								event.stopPropagation();
+								event.stopImmediatePropagation();
+
+								if ( $next.parent().hasClass( 'tribe-ext-template-debug' ) ) {
+									console.log('child->parent');
+								}
+
+								$next.removeClass( 'tribe-ext-template-debug-border' );
 							}
-
-							if ( 50 > hPercent ) {
-								$this.addClass( 'tribe-ext-template-debug-bottom' );
-							} else {
-								$this.addClass( 'tribe-ext-template-debug-top' );
-							}
-
-							$this.show();
-							$next.css( 'boxShadow', 'inset 0px 0px 0px 1px red' );
 						} );
 
+					} );
 
-
-						$next.on( 'mouseleave', function() {
-							//$this.hide();
-							$next.css( 'boxShadow', '' );
-						} );
-				} );
-
-				})(jQuery)
+				} )(jQuery)
 				
 			</script>
 			<?php
@@ -306,18 +385,15 @@ if (
 			// Setup the Hook name
 			$legacy_hook_name = implode( '/', $legacy_namespace );
 			$hook_name        = implode( '/', $namespace );
-			echo '<span class="tribe-ext-template-debug">' 
-			. "<ul>" 
-			. "<li>plugin file: <input value='{$path}' readonly /></li>"
-			. "<li>theme path: <input value='[your theme]/tribe/{$hook_name}.php' readonly /></li>"
-			. "</ul>"
-			. "<ol>"
-			. "<li>filter: <input value='tribe_template_pre_html:{$hook_name}' readonly /></li>"
-			. "<li>action: <input value='tribe_template_before_include:{$hook_name}' readonly /></li>"
-			. "<li>action: <input value='tribe_template_after_include:{$hook_name}' readonly /></li>"
-			. "<li>filter: <input value='tribe_template_html:{$hook_name}' readonly /></li>"
-			. "</ol>" 
-			. '</span>';
+			echo "<span 
+				class='tribe-ext-template-debug'
+				data-plugin-file='{$path}'
+				data-theme-path='[your theme]/tribe/{$hook_name}.php'
+				data-pre-html-filter='tribe_template_pre_html:{$hook_name}'
+				data-before-include-action='tribe_template_before_include:{$hook_name}'
+				data-after-include-action='tribe_template_after_include:{$hook_name}'
+				data-template-html-filter='tribe_template_html:{$hook_name}'
+			></span>";
 		}
 
 	} // end class
