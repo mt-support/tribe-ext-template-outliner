@@ -228,7 +228,7 @@ if (
 					border: 1px solid black;
 					color: black; 
 					display: none; 
-					font-size: 1rem; 
+					font-size: 0.8rem;
 					opacity: 90%;
 					padding: .5em 2em;
 					position: fixed; 
@@ -236,6 +236,15 @@ if (
 					z-index: 99999; 
 				}
 
+
+				#tribe-ext-template-debug-panel code {
+					font-size: 0.8rem;
+				}
+
+                #tribe-ext-template-debug-panel h1 {
+                    font-size: 16px;
+                    text-align: center;
+                }
 				#tribe-ext-template-debug-panel ul {
 					list-style: none;
 				}
@@ -245,7 +254,13 @@ if (
 					margin-bottom: .25em; 
 					white-space:nowrap;
 				}
-
+                #tribe-ext-template-debug-panel span {
+                    width: 16em;
+                }
+                #tribe-ext-template-debug-panel a:after {
+                    content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==);
+                    margin: 0 3px 0 5px;
+                }
 				#tribe-ext-template-debug-panel input { 
 					width: 100%;
 				}
@@ -285,17 +300,23 @@ if (
 			// Append the panel to the body.
 			?>
 			<div id="tribe-ext-template-debug-panel">
-				<h1>Hold control to "lock" the panel. double-click inputs to copy to clipboard.</h1>
+				<h1>Hold the Control key to "lock" the panel in place. Double-click input field to copy value to clipboard.</h1>
 				<ul>
-					<li>plugin file: <input id='tribe_ext_tod_plugin_file' value='{$path}' readonly /></li>
-					<li>theme path: <input id='tribe_ext_tod_theme_path' value='[your theme]/tribe/{$hook_name}.php' readonly /></li>
+                    <li><span>Plugin file:</span> <input id='tribe_ext_tod_plugin_file' value='{$path}' readonly /></li>
+					<li><span>Theme path:</span> <input id='tribe_ext_tod_theme_path' value='[your theme]/tribe/{$hook_name}.php' readonly /></li>
 				</ul>
 				<ol>
-					<li>pre_html filter: <input id='tribe_ext_tod_pre_html' value='tribe_template_pre_html:{$hook_name}' readonly /></li>
-					<li>before_include action: <input id='tribe_ext_tod_before_include' value='tribe_template_before_include:{$hook_name}' readonly /></li>
-					<li>after_include action: <input id='tribe_ext_tod_after_include' value='tribe_template_after_include:{$hook_name}' readonly /></li>
-					<li>template_html filter: <input id='tribe_ext_tod_template_html' value='tribe_template_html:{$hook_name}' readonly /></li>
+                    <li><span><code>pre_html</code> filter:</span> <input id='tribe_ext_tod_pre_html' value='tribe_template_pre_html:{$hook_name}' readonly /></li>
+					<li><span><code>before_include</code> action:</span> <input id='tribe_ext_tod_before_include' value='tribe_template_before_include:{$hook_name}' readonly /></li>
+					<li><span><code>after_include</code> action:</span> <input id='tribe_ext_tod_after_include' value='tribe_template_after_include:{$hook_name}' readonly /></li>
+					<li><span><code>template_html</code> filter:</span> <input id='tribe_ext_tod_template_html' value='tribe_template_html:{$hook_name}' readonly /></li>
 				</ol>
+                <div>
+                    Useful resources: 
+                    <a target="_blank" href="https://theeventscalendar.com/knowledgebase/k/themers-guide/">Themer's Guide</a>
+                    | <a target="_blank" href="https://theeventscalendar.com/knowledgebase/k/customizing-template-files-2/">Customizing Template Files</a>
+                    | <a target="_blank" href="https://theeventscalendar.com/knowledgebase/k/template-hooks/">Template Hooks</a>
+                </div>
 			</div>
 			<script>
 				( function( $ ) {
