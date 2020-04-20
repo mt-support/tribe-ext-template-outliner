@@ -234,6 +234,12 @@ if (
 					width: 50%;
 					z-index: 99999; 
 				}
+
+
+				#tribe-ext-template-debug-panel code {
+					font-size: 0.8rem;
+				}
+
                 #tribe-ext-template-debug-panel h1 {
                     font-size: 16px;
                     text-align: center;
