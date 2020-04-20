@@ -107,7 +107,7 @@ if (
 				return;
 			}
 
-			// Don't show tot he general public - in case someone actually uses it on a live site!
+			// Don't show to the general public - in case someone actually uses it on a live site!
 			$user = wp_get_current_user();
 			if ( ! in_array( 'administrator', (array) $user->roles ) ) {
 				return;
@@ -115,7 +115,8 @@ if (
 
 			$this->class_loader();
 
-			$this->get_settings();
+			// No settings for now!
+			//$this->get_settings();
 
 			// Insert filter and action hooks here
 			add_action('wp_head', [ $this, 'tribe_ext_template_outliner_styles' ], 100);
@@ -392,7 +393,12 @@ if (
 		}
 
 		function tribe_ext_template_outliner_tribe_template_before_include( $file, $name, $template ) {
-			$path = explode( '/plugins/', $file )[1];
+			$path = explode( '/plugins/', $file );
+			if ( empty( $path[1]) ) {
+				return;
+			}
+
+			$path = $path[1];
 			$origin_folder_appendix = array_diff( $template->get_template_folder(), $template->get_template_origin_base_folder() );
 
 			if ( $origin_namespace = $template->template_get_origin_namespace( $file ) ) {
