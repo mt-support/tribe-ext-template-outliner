@@ -288,16 +288,16 @@ if (
 		function tribe_ext_template_outliner_scripts() {
 			?>
 			<div id="tribe-ext-template-debug-panel">
-				<h1>Hold control to "lock" the panel. double-click inputs to copy to clipboard.</h1>
+				<h1>Hold the Control key to "lock" the panel in place. Double-click input field to copy value to clipboard.</h1>
 				<ul>
-                    <li><span>plugin file:</span> <input id='tribe_ext_tod_plugin_file' value='{$path}' readonly /></li>
-					<li><span>theme path:</span> <input id='tribe_ext_tod_theme_path' value='[your theme]/tribe/{$hook_name}.php' readonly /></li>
+                    <li><span>Plugin file:</span> <input id='tribe_ext_tod_plugin_file' value='{$path}' readonly /></li>
+					<li><span>Theme path:</span> <input id='tribe_ext_tod_theme_path' value='[your theme]/tribe/{$hook_name}.php' readonly /></li>
 				</ul>
 				<ol>
-					<li><span>pre_html filter:</span> <input id='tribe_ext_tod_pre_html' value='tribe_template_pre_html:{$hook_name}' readonly /></li>
-					<li><span>before_include action:</span> <input id='tribe_ext_tod_before_include' value='tribe_template_before_include:{$hook_name}' readonly /></li>
-					<li><span>after_include action:</span> <input id='tribe_ext_tod_after_include' value='tribe_template_after_include:{$hook_name}' readonly /></li>
-					<li><span>template_html filter:</span> <input id='tribe_ext_tod_template_html' value='tribe_template_html:{$hook_name}' readonly /></li>
+                    <li><span><code>pre_html</code> filter:</span> <input id='tribe_ext_tod_pre_html' value='tribe_template_pre_html:{$hook_name}' readonly /></li>
+					<li><span><code>before_include</code> action:</span> <input id='tribe_ext_tod_before_include' value='tribe_template_before_include:{$hook_name}' readonly /></li>
+					<li><span><code>after_include</code> action:</span> <input id='tribe_ext_tod_after_include' value='tribe_template_after_include:{$hook_name}' readonly /></li>
+					<li><span><code>template_html</code> filter:</span> <input id='tribe_ext_tod_template_html' value='tribe_template_html:{$hook_name}' readonly /></li>
 				</ol>
 			</div>
 			<script>
