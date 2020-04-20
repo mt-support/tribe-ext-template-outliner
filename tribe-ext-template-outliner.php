@@ -99,10 +99,10 @@ if (
 				return;
 			}
 
-			// don't run in the admin or anything silly like that!
-			if ( 
+			// Don't run in the admin or anything silly like that!
+			if (
 				is_admin()
-				|| defined( 'DOING_AJAX' ) && DOING_AJAX
+				|| wp_doing_ajax()
 			) {
 				return;
 			}
