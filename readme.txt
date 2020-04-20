@@ -9,7 +9,7 @@ Stable tag: 1.0.0
 License: GPL version 3 or any later version
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-[Extension Description]
+Live, on-site visual guide to tribe views templates.
 
 == Description ==
 
