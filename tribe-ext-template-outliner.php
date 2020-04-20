@@ -227,14 +227,17 @@ if (
 					border: 1px solid black;
 					color: black; 
 					display: none; 
-					font-size: 1rem; 
+					font-size: 0.8rem;
 					opacity: 90%;
 					padding: .5em 2em;
 					position: fixed; 
 					width: 50%;
 					z-index: 99999; 
 				}
-
+                #tribe-ext-template-debug-panel h1 {
+                    font-size: 16px;
+                    text-align: center;
+                }
 				#tribe-ext-template-debug-panel ul {
 					list-style: none;
 				}
@@ -244,7 +247,9 @@ if (
 					margin-bottom: .25em; 
 					white-space:nowrap;
 				}
-
+                #tribe-ext-template-debug-panel span {
+                    width: 16em;
+                }
 				#tribe-ext-template-debug-panel input { 
 					width: 100%;
 				}
@@ -285,14 +290,14 @@ if (
 			<div id="tribe-ext-template-debug-panel">
 				<h1>Hold control to "lock" the panel. double-click inputs to copy to clipboard.</h1>
 				<ul>
-					<li>plugin file: <input id='tribe_ext_tod_plugin_file' value='{$path}' readonly /></li>
-					<li>theme path: <input id='tribe_ext_tod_theme_path' value='[your theme]/tribe/{$hook_name}.php' readonly /></li>
+                    <li><span>plugin file:</span> <input id='tribe_ext_tod_plugin_file' value='{$path}' readonly /></li>
+					<li><span>theme path:</span> <input id='tribe_ext_tod_theme_path' value='[your theme]/tribe/{$hook_name}.php' readonly /></li>
 				</ul>
 				<ol>
-					<li>pre_html filter: <input id='tribe_ext_tod_pre_html' value='tribe_template_pre_html:{$hook_name}' readonly /></li>
-					<li>before_include action: <input id='tribe_ext_tod_before_include' value='tribe_template_before_include:{$hook_name}' readonly /></li>
-					<li>after_include action: <input id='tribe_ext_tod_after_include' value='tribe_template_after_include:{$hook_name}' readonly /></li>
-					<li>template_html filter: <input id='tribe_ext_tod_template_html' value='tribe_template_html:{$hook_name}' readonly /></li>
+					<li><span>pre_html filter:</span> <input id='tribe_ext_tod_pre_html' value='tribe_template_pre_html:{$hook_name}' readonly /></li>
+					<li><span>before_include action:</span> <input id='tribe_ext_tod_before_include' value='tribe_template_before_include:{$hook_name}' readonly /></li>
+					<li><span>after_include action:</span> <input id='tribe_ext_tod_after_include' value='tribe_template_after_include:{$hook_name}' readonly /></li>
+					<li><span>template_html filter:</span> <input id='tribe_ext_tod_template_html' value='tribe_template_html:{$hook_name}' readonly /></li>
 				</ol>
 			</div>
 			<script>
