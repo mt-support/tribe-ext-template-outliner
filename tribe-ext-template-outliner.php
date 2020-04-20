@@ -250,6 +250,10 @@ if (
                 #tribe-ext-template-debug-panel span {
                     width: 16em;
                 }
+                #tribe-ext-template-debug-panel a:after {
+                    content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==);
+                    margin: 0 3px 0 5px;
+                }
 				#tribe-ext-template-debug-panel input { 
 					width: 100%;
 				}
@@ -299,6 +303,12 @@ if (
 					<li><span><code>after_include</code> action:</span> <input id='tribe_ext_tod_after_include' value='tribe_template_after_include:{$hook_name}' readonly /></li>
 					<li><span><code>template_html</code> filter:</span> <input id='tribe_ext_tod_template_html' value='tribe_template_html:{$hook_name}' readonly /></li>
 				</ol>
+                <div>
+                    Useful resources: 
+                    <a target="_blank" href="https://theeventscalendar.com/knowledgebase/k/themers-guide/">Themer's Guide</a>
+                    | <a target="_blank" href="https://theeventscalendar.com/knowledgebase/k/customizing-template-files-2/">Customizing Template Files</a>
+                    | <a target="_blank" href="https://theeventscalendar.com/knowledgebase/k/template-hooks/">Template Hooks</a>
+                </div>
 			</div>
 			<script>
 				( function( $ ) {
