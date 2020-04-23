@@ -99,10 +99,10 @@ if (
 				return;
 			}
 
-			// don't run in the admin or anything silly like that!
-			if ( 
+			// Don't run in the admin or anything silly like that!
+			if (
 				is_admin()
-				|| defined( 'DOING_AJAX' ) && DOING_AJAX
+				|| wp_doing_ajax()
 			) {
 				return;
 			}
@@ -119,33 +119,16 @@ if (
 			//$this->get_settings();
 
 			// Insert filter and action hooks here
-			add_action('wp_head', [ $this, 'tribe_ext_template_outliner_styles' ], 100);
+			add_action( 'wp_head', [ $this, 'tribe_ext_template_outliner_styles' ], 100 );
 			add_action( 'wp_print_footer_scripts', [ $this, 'tribe_ext_template_outliner_scripts' ], 100 );
 			add_action( 'tribe_template_before_include', [ $this, 'tribe_ext_template_outliner_tribe_template_before_include' ], 10, 3 );
+			add_action( 'admin_bar_menu', [ $this, 'tribe_ext_template_outliner_admin_bar_menu_item' ], 999 );
 		}
 
 		/**
 		 * Check if we have a sufficient version of PHP. Admin notice if we don't and user should see it.
 		 *
 		 * @link https://theeventscalendar.com/knowledgebase/php-version-requirement-changes/ All extensions require PHP 5.6+.
-		 *
-		 * Delete this paragraph and the non-applicable comments below.
-		 * Make sure to match the readme.txt header.
-		 *
-		 * Note that older version syntax errors may still throw fatals even
-		 * if you implement this PHP version checking so QA it at least once.
-		 *
-		 * @link https://secure.php.net/manual/en/migration56.new-features.php
-		 * 5.6: Variadic Functions, Argument Unpacking, and Constant Expressions
-		 *
-		 * @link https://secure.php.net/manual/en/migration70.new-features.php
-		 * 7.0: Return Types, Scalar Type Hints, Spaceship Operator, Constant Arrays Using define(), Anonymous Classes, intdiv(), and preg_replace_callback_array()
-		 *
-		 * @link https://secure.php.net/manual/en/migration71.new-features.php
-		 * 7.1: Class Constant Visibility, Nullable Types, Multiple Exceptions per Catch Block, `iterable` Pseudo-Type, and Negative String Offsets
-		 *
-		 * @link https://secure.php.net/manual/en/migration72.new-features.php
-		 * 7.2: `object` Parameter and Covariant Return Typing, Abstract Function Override, and Allow Trailing Comma for Grouped Namespaces
 		 *
 		 * @return bool
 		 */
@@ -297,6 +280,7 @@ if (
 		}
 
 		function tribe_ext_template_outliner_scripts() {
+			// Append the panel to the body.
 			?>
 			<div id="tribe-ext-template-debug-panel">
 				<h1>Hold the Control key to "lock" the panel in place. Double-click input field to copy value to clipboard.</h1>
@@ -321,21 +305,38 @@ if (
 				( function( $ ) {
 					var $panel = $( '#tribe-ext-template-debug-panel' );
 
+					$( '.tribe-ext-template-outliner-toggle > a' ).on( 'click', function( event ) {
+						event.stopPropagation();
+
+						if ( 'true' === $panel.data( 'toggle-off' ) ) {
+							$panel.data( 'toggle-off', 'false' );
+						} else {
+							$panel.data( 'toggle-off', 'true' );
+							$panel.hide();
+							$( '.tribe-ext-template-debug-border' ).removeClass( 'tribe-ext-template-debug-border' )
+						}
+
+						return false;
+					} );
+
 					$panel.find( 'input' ).dblclick( function () {
 						$( this ).select();
-  						document.execCommand( 'copy' );
+						document.execCommand( 'copy' );
 					} );
 
 					$('.tribe-ext-template-debug').each(
 					function( index ) {
 						var $this  = $( this );
 						var $next  = $this.next();
-						
+						console.log( $panel.data( 'toggle-off' ) );
+
 						$next.on( {
 							mouseenter: function( event ) {
+								if ( 'true' === $panel.data( 'toggle-off' ) ) {
+									return;
+								}
 								event.stopPropagation();
 								event.stopImmediatePropagation();
-								$( 'body' ).append($this);
 								$panel.hide();
 								var xCord = event.screenX;
 								var yCord = event.screenY;
@@ -373,6 +374,9 @@ if (
 								$panel.show();
 							},
 							mouseleave: function( event ) {
+								if ( 'true' === $panel.data( 'toggle-off' ) ) {
+									return;
+								}
 								event.stopPropagation();
 								event.stopImmediatePropagation();
 
@@ -423,5 +427,20 @@ if (
 			></span>";
 		}
 
+		function tribe_ext_template_outliner_admin_bar_menu_item( $wp_admin_bar ) {
+			$args = array(
+				'id' => 'tribe-ext-template-outliner-toggle',
+				'title' => 'Toggle Outliner',
+				'href' => '#',
+				'meta' => array(
+					'target' => '_self',
+					'class' => 'tribe-ext-template-outliner-toggle',
+					'title' => 'Toggle on/off the Tribe Template Outliner.'
+				)
+			);
+			
+			$wp_admin_bar->add_node($args);
+		}
 	} // end class
+ 
 } // end if class_exists check
