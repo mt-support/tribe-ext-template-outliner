@@ -13,12 +13,16 @@ if ( ! class_exists( Settings::class ) ) {
 		/**
 		 * The Settings Helper class.
 		 *
+		 * @since 1.0.0
+		 *
 		 * @var Settings_Helper
 		 */
 		protected $settings_helper;
 
 		/**
 		 * The prefix for our settings keys.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @see get_options_prefix() Use this method to get this property's value.
 		 *
@@ -29,7 +33,7 @@ if ( ! class_exists( Settings::class ) ) {
 		/**
 		 * Settings constructor.
 		 *
-		 * TODO: Update this entire class for your needs, or remove the entire `src` directory this file is in and do not load it in the main plugin file.
+		 * @since 1.0.0
 		 *
 		 * @param string $options_prefix Recommended: the plugin text domain, with hyphens converted to underscores.
 		 */
@@ -38,15 +42,14 @@ if ( ! class_exists( Settings::class ) ) {
 
 			$this->set_options_prefix( $options_prefix );
 
-			// Remove settings specific to Google Maps
-			add_action( 'admin_init', [ $this, 'remove_settings' ] );
-
-			// Add settings specific to OSM
+			// Add settings specific to this extension.
 			add_action( 'admin_init', [ $this, 'add_settings' ] );
 		}
 
 		/**
 		 * Allow access to set the Settings Helper property.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @see get_settings_helper()
 		 *
@@ -63,6 +66,8 @@ if ( ! class_exists( Settings::class ) ) {
 		/**
 		 * Allow access to get the Settings Helper property.
 		 *
+		 * @since 1.0.0
+		 *
 		 * @see set_settings_helper()
 		 */
 		public function get_settings_helper() {
@@ -72,8 +77,7 @@ if ( ! class_exists( Settings::class ) ) {
 		/**
 		 * Set the options prefix to be used for this extension's settings.
 		 *
-		 * Recommended: the plugin text domain, with hyphens converted to underscores.
-		 * Is forced to end with a single underscore. All double-underscores are converted to single.
+		 * @since 1.0.0
 		 *
 		 * @see get_options_prefix()
 		 *
@@ -88,6 +92,8 @@ if ( ! class_exists( Settings::class ) ) {
 		/**
 		 * Get this extension's options prefix.
 		 *
+		 * @since 1.0.0
+		 *
 		 * @see set_options_prefix()
 		 *
 		 * @return string
@@ -100,6 +106,8 @@ if ( ! class_exists( Settings::class ) ) {
 		 * Given an option key, get this extension's option value.
 		 *
 		 * This automatically prepends this extension's option prefix so you can just do `$this->get_option( 'a_setting' )`.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @see tribe_get_option()
 		 *
@@ -115,6 +123,8 @@ if ( ! class_exists( Settings::class ) ) {
 
 		/**
 		 * Get an option key after ensuring it is appropriately prefixed.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @param string $key
 		 *
@@ -132,6 +142,8 @@ if ( ! class_exists( Settings::class ) ) {
 
 		/**
 		 * Get an array of all of this extension's options without array keys having the redundant prefix.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @return array
 		 */
@@ -152,6 +164,8 @@ if ( ! class_exists( Settings::class ) ) {
 
 		/**
 		 * Get an array of all of this extension's raw options (i.e. the ones starting with its prefix).
+		 *
+		 * @since 1.0.0
 		 *
 		 * @return array
 		 */
@@ -178,6 +192,8 @@ if ( ! class_exists( Settings::class ) ) {
 		 *
 		 * This automatically prepends this extension's option prefix so you can just do `$this->delete_option( 'a_setting' )`.
 		 *
+		 * @since 1.0.0
+		 *
 		 * @param string $key
 		 *
 		 * @return mixed
@@ -193,38 +209,44 @@ if ( ! class_exists( Settings::class ) ) {
 		}
 
 		/**
-		 * Here is an example of removing settings from Events > Settings > General tab > "Map Settings" section
-		 * that are specific to Google Maps.
-		 */
-		public function remove_settings() {
-			// "Enable Google Maps" checkbox
-			$this->settings_helper->remove_field( 'embedGoogleMaps', 'general' );
-			// "Map view search distance limit" (default of 25)
-			$this->settings_helper->remove_field( 'geoloc_default_geofence', 'general' );
-			// "Google Maps default zoom level" (0-21, default of 10)
-			$this->settings_helper->remove_field( 'embedGoogleMapsZoom', 'general' );
-		}
-
-		/**
-		 * Adds a new section of fields to Events > Settings > General tab, appearing after the "Map Settings" section
-		 * and before the "Miscellaneous Settings" section.
+		 * Adds a new section of fields to Events > Settings > General tab, appearing before the "Miscellaneous Settings" section.
 		 *
-		 * TODO: Move it to where you want and update this docblock. If you like it here, just delete this TODO.
+		 * @since 1.0.0
 		 */
 		public function add_settings() {
-			$fields = [
-				// TODO: Settings heading start. Remove this element if not needed. Also remove the corresponding `get_example_intro_text()` method below.
-				'Example'   => [
-					'type' => 'html',
-					'html' => $this->get_example_intro_text(),
+			global $wp_roles;
+
+			$roles     = [];
+			$all_roles = $wp_roles->roles;
+			foreach( $all_roles as $key => $role ) {
+				$roles[$key] = $role['name'];
+			}
+
+			$fields    = [
+				'header' => [
+					'type'            => 'html',
+					'html'            => '<h3>' . esc_html_x( 'Tribe Views Template Outliner', 'Settings header', 'tribe-ext-template-outliner' ) . '</h3>',
 				],
-				// TODO: Settings heading end.
-				'a_setting' => [ // TODO
+				'intro'  => [
+					'type'            => 'html',
+					'html'            => '<p>' .esc_html__( 'Settings for the Tribe Template Outliner extension.', 'tribe-ext-template-outliner' ) . '</p>',
+				],
+				'color'  => [
+					'default'         => 'red',
+					'label'           => esc_html__( 'Color', 'tribe-ext-template-outliner' ),
+					'placeholder'     => 'red',
+					'tooltip'         => esc_html__( 'Enter your custom color, as you would put it in a stylesheet, for the outlines.', 'tribe-ext-template-outliner' ),
 					'type'            => 'text',
-					'label'           => esc_html__( 'xxx try this', 'tribe-ext-extension-template' ),
-					'tooltip'         => sprintf( esc_html__( 'Enter your custom URL, including "http://" or "https://", for example %s.', 'tribe-ext-extension-template' ), '<code>https://wpshindig.com/events/</code>' ),
 					'validation_type' => 'html',
 				],
+				'roles'  => [
+					'default'         => 'administrator',
+					'label'           => esc_html__( 'Role', 'tribe-ext-template-outliner' ),
+					'tooltip'         => esc_html__( 'Select user roles that can view the outlines.', 'tribe-ext-template-outliner' ),
+					'options'         => $roles,
+					'type'            => 'checkbox_list',
+					'validation_type' => 'options_multi',
+				]
 			];
 
 			$this->settings_helper->add_fields(
@@ -253,24 +275,6 @@ if ( ! class_exists( Settings::class ) ) {
 			);
 
 			return (array) $prefixed_fields;
-		}
-
-		/**
-		 * Here is an example of getting some HTML for the Settings Header.
-		 *
-		 * TODO: Delete this method if you do not need a heading for your settings. Also remove the corresponding element in the the $fields array in the `add_settings()` method above.
-		 *
-		 * @return string
-		 */
-		private function get_example_intro_text() {
-			$result = '<h3>' . esc_html_x( 'Example Extension Setup', 'Settings header', 'tribe-ext-extension-template' ) . '</h3>';
-			$result .= '<div style="margin-left: 20px;">';
-			$result .= '<p>';
-			$result .= esc_html_x( 'Some text here about this settings section.', 'Settings', 'tribe-ext-extension-template' );
-			$result .= '</p>';
-			$result .= '</div>';
-
-			return $result;
 		}
 
 	} // class
