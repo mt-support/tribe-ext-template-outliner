@@ -125,16 +125,15 @@ if (
 			
 			$is_allowed = array_intersect( $allowed, (array) $user->roles );
 
-			if ( empty( $is_allowed )  ) {
+			if ( ! empty( $allowed ) && empty( $is_allowed )  ) {
 				return;
 			}
 
 			// Insert filter and action hooks here
-			add_action( 'init', [ $this, 'tribe_ext_template_outliner_styles' ], 100 );
-			add_action( 'init', [ $this, 'tribe_ext_template_outliner_scripts' ], 100 );
-			add_action( 'wp_print_footer_scripts', [ $this, 'tribe_ext_template_outliner_panel' ], 1 );
-			add_action( 'tribe_template_before_include', [ $this, 'tribe_ext_template_outliner_tribe_template_before_include' ], 10, 3 );
-			add_action( 'admin_bar_menu', [ $this, 'tribe_ext_template_outliner_admin_bar_menu_item' ], 999 );
+			$this->assets();
+			add_action( 'wp_print_footer_scripts', [ $this, 'panel' ], 1 );
+			add_action( 'tribe_template_before_include', [ $this, 'tribe_template_before_include' ], 10, 3 );
+			add_action( 'admin_bar_menu', [ $this, 'admin_bar_menu_item' ], 999 );
 		}
 
 		/**
@@ -207,41 +206,35 @@ if (
 		}
 
 		/**
-		 * Enqueue styles.
+		 * Enqueue assets and localize scripts.
 		 *
 		 * @since 1.0.0
 		 *
 		 * @return void
 		 */
-		function tribe_ext_template_outliner_styles() {
-			wp_enqueue_style( 
-				'tribe_ext_template_outliner_style', 
-				plugins_url( '/src/resources/tribe-ext-template-outliner.css', __FILE__ )
-			);
-		}
-
-		/**
-		 * Enqueue amd localize scripts.
-		 *
-		 * @since 1.0.0
-		 *
-		 * @return void
-		 */
-		function tribe_ext_template_outliner_scripts() {
-			wp_enqueue_script( 
-				'tribe_ext_template_outliner_script', 
-				plugins_url( '/src/resources/tribe-ext-template-outliner.js', __FILE__ ), 
-				'jQuery',
-				$this->version,
-				true
-			);
-
-			wp_localize_script(
-				'tribe_ext_template_outliner_script', 
-				'template_outliner_vars', 
+		function assets() {
+			tribe_asset(
+				tribe( 'tec.main' ),
+				'tribe_ext_template_outliner_script',
+				plugins_url( '/src/resources/tribe-ext-template-outliner.js', __FILE__ ),
+				['jquery' ],
+				'init',
 				[
-					'color' =>  $this->settings->get_option( 'color', 'red' ),
+					'localize'     => [
+						'name' => 'template_outliner_vars',
+						'data' => [
+							'color' =>  $this->settings->get_option( 'color', 'red' ),
+						],
+					]
 				]
+			);
+
+			tribe_asset( 
+				tribe( 'tec.main' ),
+				'tribe_ext_template_outliner_style',
+				plugins_url( '/src/resources/tribe-ext-template-outliner.css', __FILE__ ),
+				[],
+				'init'
 			);
 		}
 
@@ -252,7 +245,7 @@ if (
 		 *
 		 * @return void
 		 */
-		function tribe_ext_template_outliner_panel() {
+		function panel() {
 			?>
 			<div id="tribe-ext-template-outliner-panel">
 				<h1>Hold the Control key to "freeze" the panel and its data. Double-click input field to copy value to clipboard.</h1>
@@ -287,7 +280,7 @@ if (
 		 * 
 		 * @return void
 		 */
-		function tribe_ext_template_outliner_tribe_template_before_include( $file, $name, $template ) {
+		function tribe_template_before_include( $file, $name, $template ) {
 			$path = explode( '/plugins/', $file );
 			if ( empty( $path[1]) ) {
 				return;
@@ -327,7 +320,7 @@ if (
 		 * 
 		 * @return void
 		 */
-		function tribe_ext_template_outliner_admin_bar_menu_item( &$wp_admin_bar ) {
+		function admin_bar_menu_item( &$wp_admin_bar ) {
 			$args = array(
 				'id' => 'tribe-ext-template-outliner-toggle',
 				'title' => 'Toggle Outliner',
