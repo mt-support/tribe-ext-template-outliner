@@ -242,7 +242,7 @@ if ( ! class_exists( Settings::class ) ) {
 				'roles'  => [
 					'default'         => 'administrator',
 					'label'           => esc_html__( 'Role', 'tribe-ext-template-outliner' ),
-					'tooltip'         => esc_html__( 'Select user roles that can view the outlines.', 'tribe-ext-template-outliner' ),
+					'tooltip'         => esc_html__( 'Select at least one user role that can view the outlines.', 'tribe-ext-template-outliner' ),
 					'options'         => $roles,
 					'type'            => 'checkbox_list',
 					'validation_type' => 'options_multi',
