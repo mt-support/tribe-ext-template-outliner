@@ -121,11 +121,11 @@ if (
 
 			// Only show to the roles allowed in the settings.
 			$user = wp_get_current_user();
-			$allowed = $this->settings->get_option( 'roles', [] );
+			$allowed = $this->settings->get_option( 'roles', [ 'administrator' ] );
 			
 			$is_allowed = array_intersect( $allowed, (array) $user->roles );
 
-			if ( ! empty( $allowed ) && empty( $is_allowed )  ) {
+			if ( empty( $is_allowed )  ) {
 				return;
 			}
 
