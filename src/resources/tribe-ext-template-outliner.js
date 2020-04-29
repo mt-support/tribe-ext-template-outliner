@@ -2,7 +2,7 @@
     var $panel = $( '#tribe-ext-template-outliner-panel' );
 
     
-    $(document).ready( function($) {
+    $(document).ready( function( $ ) {
         $( 'body' ).get(0).style.setProperty( '--tribe-ext-template-outliner-color', template_outliner_vars.color );
     } );
 
@@ -53,7 +53,7 @@
         document.execCommand( 'copy' );
     } );
 
-    $('.tribe-ext-template-outliner').each(
+    $( '.tribe-ext-template-outliner' ).each(
     function( index ) {
         var $this  = $( this );
         var $next  = $this.next();

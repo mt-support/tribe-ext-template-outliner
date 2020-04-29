@@ -219,7 +219,7 @@ if ( ! class_exists( Settings::class ) ) {
 			$roles     = [];
 			$all_roles = $wp_roles->roles;
 			foreach( $all_roles as $key => $role ) {
-				$roles[$key] = $role['name'];
+				$roles[ $key ] = $role['name'];
 			}
 
 			$fields    = [
