@@ -41,18 +41,31 @@ if (
 
 		/**
 		 * @var Tribe__Autoloader
+		 *
+		 * @since 1.0.0
 		 */
 		private $class_loader;
 
 		/**
 		 * @var Settings
+		 *
+		 * @since 1.0.0
 		 */
 		private $settings;
+
+		/**
+		 * @var Version
+		 *
+		 * @since 1.0.0
+		 */
+		private $version = '1.0.0';
 
 		/**
 		 * Setup the Extension's properties.
 		 *
 		 * This always executes even if the required plugins are not present.
+		 *
+		 * @since 1.0.0
 		 */
 		public function construct() {
 			// Dependency requirements and class properties can be defined here.
@@ -64,7 +77,7 @@ if (
 		 *
 		 * Settings_Helper will append a trailing underscore before each option.
 		 *
-		 * TODO: Remove if not using Settings.
+		 * @since 1.0.0
 		 *
 		 * @see \Tribe\Extensions\Example\Settings::set_options_prefix()
 		 *
@@ -76,6 +89,8 @@ if (
 
 		/**
 		 * Get Settings instance.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @return Settings
 		 */
@@ -89,44 +104,42 @@ if (
 
 		/**
 		 * Extension initialization and hooks.
+		 *
+		 * @since 1.0.0
 		 */
 		public function init() {
-			// Load plugin textdomain
-			// Don't forget to generate the 'languages/tribe-ext-template-outliner.pot' file
+			// Load plugin textdomain.
 			load_plugin_textdomain( 'tribe-ext-template-outliner', false, basename( dirname( __FILE__ ) ) . '/languages/' );
 
 			if ( ! $this->php_version_check() ) {
 				return;
 			}
 
-			// Don't run in the admin or anything silly like that!
-			if (
-				is_admin()
-				|| wp_doing_ajax()
-			) {
-				return;
-			}
-
-			// Don't show to the general public - in case someone actually uses it on a live site!
-			$user = wp_get_current_user();
-			if ( ! in_array( 'administrator', (array) $user->roles ) ) {
-				return;
-			}
-
 			$this->class_loader();
 
-			// No settings for now!
-			//$this->get_settings();
+			$this->get_settings();
+
+			// Only show to the roles allowed in the settings.
+			$user = wp_get_current_user();
+			$allowed = $this->settings->get_option( 'roles', [ 'administrator' ] );
+			
+			$is_allowed = array_intersect( $allowed, (array) $user->roles );
+
+			if ( empty( $is_allowed )  ) {
+				return;
+			}
 
 			// Insert filter and action hooks here
-			add_action( 'wp_head', [ $this, 'tribe_ext_template_outliner_styles' ], 100 );
-			add_action( 'wp_print_footer_scripts', [ $this, 'tribe_ext_template_outliner_scripts' ], 100 );
-			add_action( 'tribe_template_before_include', [ $this, 'tribe_ext_template_outliner_tribe_template_before_include' ], 10, 3 );
-			add_action( 'admin_bar_menu', [ $this, 'tribe_ext_template_outliner_admin_bar_menu_item' ], 999 );
+			$this->assets();
+			add_action( 'wp_print_footer_scripts', [ $this, 'panel' ], 1 );
+			add_action( 'tribe_template_before_include', [ $this, 'tribe_template_before_include' ], 10, 3 );
+			add_action( 'admin_bar_menu', [ $this, 'admin_bar_menu_item' ], 999 );
 		}
 
 		/**
 		 * Check if we have a sufficient version of PHP. Admin notice if we don't and user should see it.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @link https://theeventscalendar.com/knowledgebase/php-version-requirement-changes/ All extensions require PHP 5.6+.
 		 *
@@ -160,7 +173,7 @@ if (
 		/**
 		 * Use Tribe Autoloader for all class files within this namespace in the 'src' directory.
 		 *
-		 * TODO: Delete this method and its usage throughout this file if there is no `src` directory, such as if there are no settings being added to the admin UI.
+		 * @since 1.0.0
 		 *
 		 * @return Tribe__Autoloader
 		 */
@@ -180,20 +193,9 @@ if (
 		}
 
 		/**
-		 * Demonstration of getting this extension's `a_setting` option value.
-		 *
-		 * TODO: Rework or remove this.
-		 *
-		 * @return mixed
-		 */
-		public function get_one_custom_option() {
-			$settings = $this->get_settings();
-
-			return $settings->get_option( 'a_setting', 'https://theeventscalendar.com/' );
-		}
-
-		/**
 		 * Get all of this extension's options.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @return array
 		 */
@@ -203,87 +205,50 @@ if (
 			return $settings->get_all_options();
 		}
 
-		function tribe_ext_template_outliner_styles() {
-			?><style> 
-				#tribe-ext-template-debug-panel { 
-					background-color: white; 
-					border-radius: 3px;
-					border: 1px solid black;
-					color: black; 
-					display: none; 
-					font-size: 0.8rem;
-					opacity: 90%;
-					padding: .5em 2em;
-					position: fixed; 
-					width: 50%;
-					z-index: 99999; 
-				}
+		/**
+		 * Enqueue assets and localize scripts.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @return void
+		 */
+		function assets() {
+			tribe_asset(
+				tribe( 'tec.main' ),
+				'tribe_ext_template_outliner_script',
+				plugins_url( '/src/resources/tribe-ext-template-outliner.js', __FILE__ ),
+				['jquery' ],
+				'init',
+				[
+					'localize'     => [
+						'name' => 'template_outliner_vars',
+						'data' => [
+							'color' =>  $this->settings->get_option( 'color', 'red' ),
+						],
+					]
+				]
+			);
 
-
-				#tribe-ext-template-debug-panel code {
-					font-size: 0.8rem;
-				}
-
-                #tribe-ext-template-debug-panel h1 {
-                    font-size: 16px;
-                    text-align: center;
-                }
-				#tribe-ext-template-debug-panel ul {
-					list-style: none;
-				}
-
-				#tribe-ext-template-debug-panel li { 
-					display: flex; 
-					margin-bottom: .25em; 
-					white-space:nowrap;
-				}
-                #tribe-ext-template-debug-panel span {
-                    width: 16em;
-                }
-                #tribe-ext-template-debug-panel a:after {
-                    content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==);
-                    margin: 0 3px 0 5px;
-                }
-				#tribe-ext-template-debug-panel input { 
-					width: 100%;
-				}
-
-				.tribe-ext-template-debug {
-					display: none;
-				}
-
-				.tribe-ext-template-debug-bottom {
-					border-top-left-radius: 0;
-					border-top-right-radius: 0;
-					bottom: 0;
-				}
-				.tribe-ext-template-debug-left {
-					border-bottom-right-radius: 0;
-					border-top-right-radius: 0;
-					left: 0;
-				}
-				.tribe-ext-template-debug-right {
-					border-bottom-left-radius: 0;
-					border-top-left-radius: 0;
-					right: 0;
-				}
-				.tribe-ext-template-debug-top {
-					border-bottom-left-radius: 0;
-					border-bottom-right-radius: 0;
-					top: 0;
-				}
-
-				.tribe-ext-template-debug-border { 
-					box-shadow: inset 0px 0px 0px 1px red; 
-				} 
-			</style><?php
+			tribe_asset( 
+				tribe( 'tec.main' ),
+				'tribe_ext_template_outliner_style',
+				plugins_url( '/src/resources/tribe-ext-template-outliner.css', __FILE__ ),
+				[],
+				'init'
+			);
 		}
 
-		function tribe_ext_template_outliner_scripts() {
-			// Append the panel to the body.
+		/**
+		 * Appends the info panel to the body.
+		 * 
+		 * @since 1.0.0
+		 *
+		 * @return void
+		 */
+		function panel() {
 			?>
-			<div id="tribe-ext-template-debug-panel">
-				<h1>Hold the Control key to "lock" the panel in place. Double-click input field to copy value to clipboard.</h1>
+			<div id="tribe-ext-template-outliner-panel">
+				<h1>Hold the Control key to "freeze" the panel and its data. Double-click input field to copy value to clipboard.</h1>
 				<ul>
                     <li><span>Plugin file:</span> <input id='tribe_ext_tod_plugin_file' value='{$path}' readonly /></li>
 					<li><span>Theme path:</span> <input id='tribe_ext_tod_theme_path' value='[your theme]/tribe/{$hook_name}.php' readonly /></li>
@@ -301,102 +266,21 @@ if (
                     | <a target="_blank" href="https://theeventscalendar.com/knowledgebase/k/template-hooks/">Template Hooks</a>
                 </div>
 			</div>
-			<script>
-				( function( $ ) {
-					var $panel = $( '#tribe-ext-template-debug-panel' );
-
-					$( '.tribe-ext-template-outliner-toggle > a' ).on( 'click', function( event ) {
-						event.stopPropagation();
-
-						if ( 'true' === $panel.data( 'toggle-off' ) ) {
-							$panel.data( 'toggle-off', 'false' );
-						} else {
-							$panel.data( 'toggle-off', 'true' );
-							$panel.hide();
-							$( '.tribe-ext-template-debug-border' ).removeClass( 'tribe-ext-template-debug-border' )
-						}
-
-						return false;
-					} );
-
-					$panel.find( 'input' ).dblclick( function () {
-						$( this ).select();
-						document.execCommand( 'copy' );
-					} );
-
-					$('.tribe-ext-template-debug').each(
-					function( index ) {
-						var $this  = $( this );
-						var $next  = $this.next();
-						console.log( $panel.data( 'toggle-off' ) );
-
-						$next.on( {
-							mouseenter: function( event ) {
-								if ( 'true' === $panel.data( 'toggle-off' ) ) {
-									return;
-								}
-								event.stopPropagation();
-								event.stopImmediatePropagation();
-								$panel.hide();
-								var xCord = event.screenX;
-								var yCord = event.screenY;
-
-								if ( ! event.ctrlKey ) {
-									// Class cleanup.
-									$panel.removeClass( 'tribe-ext-template-debug-left tribe-ext-template-debug-right tribe-ext-template-debug-top tribe-ext-template-debug-bottom' );
-
-									// Reposition panel to allow mouse access to entire page.
-									if ( 50 > ( xCord / $( window ).width() * 100 ) ) {
-										$panel.addClass( 'tribe-ext-template-debug-right' );
-									} else {
-										$panel.addClass( 'tribe-ext-template-debug-left' );
-									}
-
-									if ( 50 > ( yCord / $( window ).height() * 100 ) ) {
-										$panel.addClass( 'tribe-ext-template-debug-bottom' );
-									} else {
-										$panel.addClass( 'tribe-ext-template-debug-top' );
-									}
-								
-									// Update data in panel.
-									$( '#tribe_ext_tod_plugin_file' ).val( $this.data( 'plugin-file' ) );
-									$( '#tribe_ext_tod_theme_path' ).val( $this.data( 'theme-path' ) );
-									$( '#tribe_ext_tod_pre_html' ).val( $this.data( 'pre-html-filter' ) );
-									$( '#tribe_ext_tod_before_include' ).val( $this.data( 'before-include-action' ) );
-									$( '#tribe_ext_tod_after_include' ).val( $this.data( 'after-include-action' ) );
-									$( '#tribe_ext_tod_template_html' ).val( $this.data( 'template-html-filter' ) );
-									
-									// Add indicator class to hover target.
-									$next.addClass( 'tribe-ext-template-debug-border' );
-								}
-
-								// Show the panel if it's hidden.
-								$panel.show();
-							},
-							mouseleave: function( event ) {
-								if ( 'true' === $panel.data( 'toggle-off' ) ) {
-									return;
-								}
-								event.stopPropagation();
-								event.stopImmediatePropagation();
-
-								if ( $next.parent().hasClass( 'tribe-ext-template-debug' ) ) {
-									console.log('child->parent');
-								}
-
-								$next.removeClass( 'tribe-ext-template-debug-border' );
-							}
-						} );
-
-					} );
-
-				} )(jQuery)
-				
-			</script>
 			<?php
 		}
 
-		function tribe_ext_template_outliner_tribe_template_before_include( $file, $name, $template ) {
+		/**
+		 * Adds the info span before each template.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param string $file      Complete path to include the PHP File
+		 * @param array  $name      Template name
+		 * @param self   $template  Current instance of the Tribe__Template
+		 * 
+		 * @return void
+		 */
+		function tribe_template_before_include( $file, $name, $template ) {
 			$path = explode( '/plugins/', $file );
 			if ( empty( $path[1]) ) {
 				return;
@@ -417,7 +301,7 @@ if (
 			$legacy_hook_name = implode( '/', $legacy_namespace );
 			$hook_name        = implode( '/', $namespace );
 			echo "<span 
-				class='tribe-ext-template-debug'
+				class='tribe-ext-template-outliner'
 				data-plugin-file='{$path}'
 				data-theme-path='[your theme]/tribe/{$hook_name}.php'
 				data-pre-html-filter='tribe_template_pre_html:{$hook_name}'
@@ -427,7 +311,16 @@ if (
 			></span>";
 		}
 
-		function tribe_ext_template_outliner_admin_bar_menu_item( $wp_admin_bar ) {
+		/**
+		 * Adds toggle link to WP Admin Bar.
+		 * 
+		 * @since 1.0.0
+		 * 
+		 * @param WP_Admin_Bar $wp_admin_bar WP_Admin_Bar instance, passed by reference
+		 * 
+		 * @return void
+		 */
+		function admin_bar_menu_item( &$wp_admin_bar ) {
 			$args = array(
 				'id' => 'tribe-ext-template-outliner-toggle',
 				'title' => 'Toggle Outliner',

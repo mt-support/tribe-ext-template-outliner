@@ -1,0 +1,74 @@
+:root {
+    --tribe-ext-template-outliner-color: red;
+}
+
+#tribe-ext-template-outliner-panel { 
+    background-color: white; 
+    border-radius: 3px;
+    border: 1px solid black;
+    color: black; 
+    display: none; 
+    font-size: 0.8rem;
+    opacity: 90%;
+    padding: .5em 2em;
+    position: fixed; 
+    width: 50%;
+    z-index: 99999; 
+}
+
+#tribe-ext-template-outliner-panel code {
+    font-size: 0.8rem;
+}
+
+#tribe-ext-template-outliner-panel h1 {
+    font-size: 16px;
+    text-align: center;
+}
+#tribe-ext-template-outliner-panel ul {
+    list-style: none;
+}
+
+#tribe-ext-template-outliner-panel li { 
+    display: flex; 
+    margin-bottom: .25em; 
+    white-space:nowrap;
+}
+#tribe-ext-template-outliner-panel span {
+    width: 16em;
+}
+#tribe-ext-template-outliner-panel a:after {
+    content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAQElEQVR42qXKwQkAIAxDUUdxtO6/RBQkQZvSi8I/pL4BoGw/XPkh4XigPmsUgh0626AjRsgxHTkUThsG2T/sIlzdTsp52kSS1wAAAABJRU5ErkJggg==);
+    margin: 0 3px 0 5px;
+}
+#tribe-ext-template-outliner-panel input { 
+    width: 100%;
+}
+
+.tribe-ext-template-outliner {
+    display: none;
+}
+
+.tribe-ext-template-outliner-bottom {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    bottom: 0;
+}
+.tribe-ext-template-outliner-left {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    left: 0;
+}
+.tribe-ext-template-outliner-right {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    right: 0;
+}
+.tribe-ext-template-outliner-top {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    top: 0;
+}
+
+.tribe-ext-template-outliner-border {
+    box-shadow: inset 0px 0px 0px 1px var(--tribe-ext-template-outliner-color); 
+} 

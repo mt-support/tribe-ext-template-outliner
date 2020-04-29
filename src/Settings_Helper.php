@@ -11,28 +11,36 @@ if ( ! class_exists( Settings_Helper::class ) ) {
 	class Settings_Helper {
 
 		/**
-		 * Fields inserted into misc section
+		 * Fields inserted into misc section.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @var array
 		 */
 		private $insert_fields_misc = [];
 
 		/**
-		 * Fields that will be inserted above a specified field
+		 * Fields that will be inserted above a specified field.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @var array
 		 */
 		private $insert_fields_above = [];
 
 		/**
-		 * Fields that will be inserted below a specified field
+		 * Fields that will be inserted below a specified field.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @var array
 		 */
 		private $insert_fields_below = [];
 
 		/**
-		 * Array of settings being added to a Tribe Settings tab
+		 * Array of settings being added to a Tribe Settings tab.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @var array
 		 */
@@ -40,7 +48,9 @@ if ( ! class_exists( Settings_Helper::class ) ) {
 
 
 		/**
-		 * Setup the helper
+		 * Setup the helper.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @param int $priority Priority at which this hooks into 'tribe_settings_tab_fields'.
 		 */
@@ -50,7 +60,9 @@ if ( ! class_exists( Settings_Helper::class ) ) {
 
 
 		/**
-		 * Add a field to a Tribe Settings tab
+		 * Add a field to a Tribe Settings tab.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @param string $field_key         Option key for your setting. Example: 'fancyOptionName'.
 		 * @param array  $field_args        See Tribe__Field() for available args.
@@ -67,7 +79,9 @@ if ( ! class_exists( Settings_Helper::class ) ) {
 		}
 
 		/**
-		 * Add multiple fields to a Tribe Settings tab
+		 * Add multiple fields to a Tribe Settings tab.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @param array  $fields            Fields that will be added, expects 'fieldname' => (array) args.
 		 * @param string $setting_tab       Settings tab where this will be added. Example: 'display'.
@@ -99,7 +113,9 @@ if ( ! class_exists( Settings_Helper::class ) ) {
 
 
 		/**
-		 * Remove a field from one of the tabs in WP Admin > Events > Settings
+		 * Remove a field from one of the tabs in WP Admin > Events > Settings.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @param string $field_key   Option key for your setting. Example: 'fancyOptionName'.
 		 * @param string $setting_tab Settings tab from where this will be removed. Example: 'display'.
@@ -111,6 +127,8 @@ if ( ! class_exists( Settings_Helper::class ) ) {
 
 		/**
 		 * Attached to 'tribe_settings_tab_fields' to add/remove this class' fields on Tribe Settings pages.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @param array  $fields The fields within tribe settings page.
 		 * @param string $tab    The settings tab key.
